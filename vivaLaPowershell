@@ -50,10 +50,10 @@ Get-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\* | Select 
 
 #  List process creation events and ID any anomalies
 
-	$A = Get-EventLog -InstanceId 4688 -LogName Security | Format-List - Property Message
-	$A | Out-String > C:\Users\assessor\Desktop\events.txt
-	$B = Select-String -Path C:\Users\assessor\Desktop\events.txt -Pattern "New Process Name:" -All Matches
-  $B.Line > C:\Users\assessors\Desktop\ProccessPaths.txt
+$A = Get-EventLog -InstanceId 4688 -LogName Security | Format-List - Property Message
+$A | Out-String > C:\Users\assessor\Desktop\events.txt
+$B = Select-String -Path C:\Users\assessor\Desktop\events.txt -Pattern "New Process Name:" -All Matches
+$B.Line > C:\Users\assessors\Desktop\ProccessPaths.txt
   
   
 #  List all local user accounts and login information
