@@ -1,0 +1,67 @@
+# Host Collection
+
+
+# Display all of the services that are currently stopped
+
+Get-service | where Status -eq stopped
+
+
+# Output all of your net connections to a document, and use that document to display any connections to "127.0.0.1"
+
+Get-NetTCPConnection | Export-Csv -Path .\test.csv
+Import-Csv .\test.csv | where LocalAddress -eq 127.0.0.1
+
+
+# Output the Windows security event logs to a format that is efficient for analysis.
+
+Get-EventLog -LogName Security | Export-Csv -Path t.txt
+
+
+# Display the top 10 processes on your box, sorted by CPU usage
+
+Get-Process | Sort-Object -Descending -Property CPU | select -First 1
+
+
+# Oneliner or script that will gather all of the important info about your PC that you would need for a survey mission.  
+
+Get-ComputerInfo -Property "os*", "win*" 
+	 
+Or export to a CSV for safe keeping or reuse
+	 
+Get-ComputerInfo -Property "os*", "win*" | Export-Csv -Path C:\cool_stuff 
+
+
+#Find your shares and format them in a presentable manner.  Identify any anomalies that you find
+
+Get-SmbShare –Includehidden
+
+
+# List the startup processes, and how would you compare to a clean baseline
+
+$startup = Get-CimInstance Win32_StartupCommand | Select-Object -Property Command, User
+	
+Compare-Object -ReferenceObject $(Get-Content C:\Users\1264557298A\Documents\shell\master.txt) -DifferenceObject $startup -IncludeEqual
+
+
+# Build a table that displays the USB history of your PC
+
+Get-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\* | Select FriendlyName, Mfg | Format-Table
+
+
+#  List process creation events and ID any anomalies
+
+	$A = Get-EventLog -InstanceId 4688 -LogName Security | Format-List - Property Message
+	$A | Out-String > C:\Users\assessor\Desktop\events.txt
+	$B = Select-String -Path C:\Users\assessor\Desktop\events.txt -Pattern "New Process Name:" -All Matches
+  $B.Line > C:\Users\assessors\Desktop\ProccessPaths.txt
+  
+  
+#  List all local user accounts and login information
+
+Get-LocalUser | Format-Table -Property Name, Enabled, SID, LastLogon, PasswordRequired, PasswordLastSet, PaswordExpires, PasswordChangeableDate
+
+
+#  List all DLLs created and scheduled jobs
+
+$longlist = GCI C:\Windows\System32 -Filter *.dll | Where-Object {$_.CreationTime -gt (Get-Date).AddDays(-###)}
+$longlist | Format-List -Property FullName, CreationTime
